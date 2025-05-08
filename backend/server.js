@@ -22,6 +22,7 @@ const server = express();
 server.use(express.static('frontend'));
 server.use(onEachRequest)
 server.get('/api/data', onGetdata); // api endpoint for onGetdata function
+server.get('/api/data1', onGetdata1); // api endpoint for onGetdata function
 server.listen(port, onServerReady);
 
 function onEachRequest(request, _response, next) {
@@ -34,6 +35,10 @@ function onServerReady() {
 }
 
 async function onGetdata(_request, response) {
-    const dbResult = await db.query('select * from co2_data '); // type query here
+    const dbResult = await db.query('select * from co2_data'); // type query here
+    response.json(dbResult.rows); // json response from the db query
+}
+async function onGetdata1(_request, response) {
+    const dbResult = await db.query('select * from co2_data1'); // type query here
     response.json(dbResult.rows); // json response from the db query
 }
