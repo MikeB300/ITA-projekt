@@ -1,8 +1,8 @@
-import pg from 'pg';
+import pg from 'pg'; // import required modules/packages
 import dotenv from 'dotenv';
 
 dotenv.config(); // read .env file
-console.log('Connecting to database', process.env.PG_DATABASE);
+console.log('Connecting to database', process.env.PG_DATABASE); // use creds from .env file
 const db = new pg.Pool({
     host:     process.env.PG_HOST,
     port:     parseInt(process.env.PG_PORT),
@@ -12,39 +12,28 @@ const db = new pg.Pool({
     ssl:      { rejectUnauthorized: false },
 });
 const dbResult = await db.query('select now() as now');
-console.log('Database connection established on', dbResult.rows[0].now);
+console.log('Database connection established on', dbResult.rows[0].now); // log connection
 
 import express from 'express';
 
 console.log('Initialising webserver...');
-const port = 3006;
+const port = 3006; // port number for website
 const server = express();
 server.use(express.static('frontend'));
 server.use(onEachRequest)
-server.get('/api/albums', onGetAlbums);
-server.get('/api/slice', onGetSlice);
-server.get('/api/year', onGetyear);
+server.get('/api/data', onGetdata); // api endpoint for onGetdata function
 server.listen(port, onServerReady);
 
-function onEachRequest(request, response, next) {
-    console.log(new Date(), request.method, request.url);
+function onEachRequest(request, _response, next) {
+    console.log(new Date(), request.method, request.url); // log the time, method and url on each request
     next();
 }
 
 function onServerReady() {
-    console.log('Webserver running on port', port);
+    console.log('Webserver running on port', port); // log server port
 }
 
-async function onGetAlbums(request, response) {
-    const dbResult = await db.query('select * from albums');
-    response.json(dbResult.rows);
-}
-
-async function onGetSlice(request, response) {
-    const dbResult = await db.query('select year as released, title, artist from albums where year <1980')
-    response.json(dbResult.rows); 
-}
-async function onGetyear(request, response) {
-    const dbResult = await db.query('select year from albums')
-    response.json(dbResult.rows);
+async function onGetdata(_request, response) {
+    const dbResult = await db.query('select * from co2_data '); // type query here
+    response.json(dbResult.rows); // json response from the db query
 }
